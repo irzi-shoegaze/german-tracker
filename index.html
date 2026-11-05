@@ -28,6 +28,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Plus Jakarta Sans',system
 .chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--mu);flex-shrink:0;margin-top:2px;display:grid;place-content:center}
 .chk.on{background:var(--gr);border-color:var(--gr)}.chk.on::after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-bottom:2px}
 .view{display:none}.view.on{display:block}
+.bdg{background:var(--bl);color:#fff;border-radius:8px;padding:2px 9px;font-size:.72rem;font-weight:700}
+.dur{color:var(--mu);font-size:.74rem}
+.sr{display:grid;grid-template-columns:3.4rem 1fr;gap:8px;font-size:.78rem;line-height:1.4;margin-top:4px}
 .shake{animation:sh .4s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
 </head>
@@ -46,7 +49,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Plus Jakarta Sans',system
 
 <div id="app" class="hidden">
 <header class="p-4 sm:p-6 max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
-  <div><h1 class="font-bold text-lg">Mastery Compass</h1><p class="text-xs mut">Sinkronisasi: <b id="sync">Memeriksa…</b></p></div>
+  <div><h1 class="font-bold text-lg">Mastery Compass</h1><p class="text-xs mut">Sinkronisasi: <b id="sync" class="cursor-pointer" onclick="if(localStorage.getItem('irzi_cloud_off'))retryCloud()">Memeriksa…</b></p></div>
   <nav class="nav">
     <button class="pill on" onclick="view('jadwal',this)">Jadwal</button>
     <button class="pill" onclick="view('tes',this)">Level Check</button>
@@ -148,6 +151,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Plus Jakarta Sans',system
     </div>
   </div>
   <div id="reviews" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+  <div class="glass p-5 mt-6 flex flex-wrap items-center justify-between gap-3"><div><b>Reset progres</b><p class="text-xs mut">Menghapus centang blok, jam belajar, mode hari, dan pilihan reward. Jurnal, lamaran, log kesalahan, dan skor tetap aman.</p></div><button class="btn sec" style="color:var(--rd)" onclick="resetAsk()">Reset</button></div>
 </section>
 </main>
 <div id="toast" class="fixed bottom-6 right-6 glass px-5 py-3 text-sm font-medium" style="opacity:0;transition:opacity .3s;pointer-events:none"></div>
@@ -164,19 +168,28 @@ function norm(d){const o={};for(const k in SHAPE){let v=d&&d[k];o[k]=Array.isArr
 let A=norm(null),db=null,cloud=false,inited=false;
 try{A=norm(JSON.parse(localStorage.getItem(SK)))}catch(e){}
 try{firebase.initializeApp(CFG);db=firebase.database().ref('user_irzi/app_data')}catch(e){}
-function save(k){localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child(k).set(A[k]).catch(console.error);render()}
+function save(k){localStorage.setItem(SK,JSON.stringify(A));const keep=A[k];if(db&&cloud)db.child(k).set(keep).catch(e=>{cloudFail(e);A[k]=keep;localStorage.setItem(SK,JSON.stringify(A));render()});render()}
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,2500)}
+const RESET_ID='r2026-11-05';
+function cloudFail(e){if(!db)return;try{db.off()}catch(x){}cloud=false;localStorage.setItem('irzi_cloud_off','1');const s=$('sync');s.textContent='Lokal saja (cloud menolak)';s.style.color='var(--rd)';toast('Firebase menolak menyimpan ('+((e&&e.code)||'error')+'). Perubahan disimpan di browser ini. Cek Firebase Rules.')}
+function retryCloud(){localStorage.removeItem('irzi_cloud_off');location.reload()}
+function wipeProgress(){const z=()=>{A.tasks={};A.studyHours={};A.modes={};A.rewards={};localStorage.setItem(SK,JSON.stringify(A))};z();tS=0;localStorage.removeItem('irzi_timer');localStorage.setItem('irzi_reset',RESET_ID);
+  if(db&&cloud)db.update({tasks:null,studyHours:null,modes:null,rewards:null,'meta/reset':RESET_ID}).catch(e=>{cloudFail(e);z();render()});render()}
+function resetAsk(){if(confirm('Reset semua progres belajar (centang blok, jam belajar, mode hari, pilihan reward)?\nJurnal, lamaran, log kesalahan, dan skor level check tidak ikut terhapus. Tidak bisa dibatalkan.')){wipeProgress();toast('Progres direset')}}
 function connect(){
-  if(!db){$('sync').textContent='Mode lokal';return}
-  db.on('value',s=>{const v=s.val();cloud=true;if(v){A=norm(v);localStorage.setItem(SK,JSON.stringify(A))}else db.set(A);
-    $('sync').textContent='Tersinkron';$('sync').style.color='var(--gr)';render()},
-    ()=>{$('sync').textContent='Offline (data lokal)';$('sync').style.color='var(--rd)'});
+  const st=(t,c)=>{$('sync').textContent=t;$('sync').style.color=c||''};
+  if(!db){st('Mode lokal');if(localStorage.getItem('irzi_reset')!==RESET_ID)wipeProgress();return}
+  if(localStorage.getItem('irzi_cloud_off')){st('Lokal saja (klik untuk coba cloud lagi)','var(--rd)');if(localStorage.getItem('irzi_reset')!==RESET_ID)wipeProgress();return}
+  let first=true;
+  db.on('value',s=>{const v=s.val();cloud=true;if(v){A=norm(v);localStorage.setItem(SK,JSON.stringify(A))}else db.set(A).catch(cloudFail);
+    if(first){first=false;if(!v||!v.meta||v.meta.reset!==RESET_ID)wipeProgress()}
+    st('Tersinkron','var(--gr)');render()},()=>st('Offline (data lokal)','var(--rd)'));
 }
 function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(A,null,1)],{type:'application/json'}));a.download='jerman-backup-'+ymd(new Date())+'.json';a.click()}
 
 /* ===== Kurikulum (per minggu, mulai Selasa 3 Nov 2026) ===== */
 const START=new Date(2026,10,3),TOTAL=332;
-const SHIFTS=[{name:"Shift 2",time:"16:00-00:00",study:"Blok 1 09:00-11:00, Blok 2 11:30-13:30"},{name:"Shift 1",time:"08:00-16:00",study:"Blok 1 18:30-20:30, Blok 2 21:00-23:00"},{name:"Shift 3",time:"00:00-08:00",study:"Blok 1 16:00-18:00, Blok 2 18:30-20:30"}];
+const SHIFTS=[{name:"Shift 2",time:"16:00-00:00",b1:"09:00-11:00",b2:"11:30-13:30"},{name:"Shift 1",time:"08:00-16:00",b1:"18:30-20:30",b2:"21:00-23:00"},{name:"Shift 3",time:"00:00-08:00",b1:"16:00-18:00",b2:"18:30-20:30"}];
 const TOP=["Tes diagnostik (Start Deutsch 1 + A2 Übungssatz) lalu A1: V2, W-Fragen, Akkusativ","A1: Modalverben, trennbare Verben, Perfekt dasar (haben/sein) + Level check A1 di hari ke-6","A2: Dativ + Wechselpräpositionen","A2: Perfekt vs Präteritum (sein/haben/Modal), reflexive Verben","A2: Nebensätze weil / dass / wenn / ob","A2: Komparativ-Superlativ, Konnektoren (deshalb, trotzdem)","A2: Adjektivdeklination (Nom/Akk/Dat)","A2: Wiederholung total + Level check A2 di hari ke-6","B1: Nebensätze obwohl, damit, während, bevor, nachdem","B1: Relativsätze (Nom/Akk/Dat)","B1: Passiv (Vorgangs- dan Zustandspassiv)","B1: Konjunktiv II (Bitten, Ratschläge, Wünsche)","B1: Infinitiv mit zu, um…zu, Futur I","B1: Verben mit Präpositionen + Pronominaladverbien","B1: Präteritum lengkap + zweiteilige Konnektoren","B1: Wiederholung grammar + Wortliste B1 Goethe","Modellsatz B1: Lesen & Hören (waktu asli)","Modellsatz B1: Schreiben (3 aufgaben)","Modellsatz B1: Sprechen Teil 1-3 + perbaiki modul terlemah","Modellsatz penuh + analisis kesalahan","Modellsatz penuh #2 + tutup celah terakhir","Modellsatz penuh #3, target ≥70 tiap modul","Pekan ujian: Modellsatz ringan + istirahat cukup (target ujian pertama Apr 2027)"];
 const ROLE=["Pengantar + contoh","Übung 1","Übung 2 + koreksi","Anwenden: tulis/ucapkan","Ulang kesalahan minggu ini","Mini-quiz mandiri"];
 const B3=["[Schreiben] Tulis 5-8 kalimat Jerman dari topik hari ini","[Sprechen] Shadowing 15 mnt + rekam dan dengarkan ulang","[Schreiben] Teks pendek sesuai level, koreksi sendiri","[Sprechen] Sesi partner (italki/Tandem/Discord) atau monolog 5 mnt","[Schreiben] Email/forum sesuai level; cek V2, sein/haben, huruf besar","[Hören] Dictation 15 mnt + ulang bagian yang salah dengar"];
@@ -188,11 +201,12 @@ let days=[],byDate={};
 function gen(){let d=new Date(START),si=0;days=[];byDate={};
   for(let n=1;n<=TOTAL;n++){if(n>1&&d.getDay()===0)si=(si+1)%3;
     const w=Math.floor((n-1)/7)+1,di=(n-1)%7,top=TOP[Math.min(w,TOP.length)-1];let t;
-    if(di===6)t=[{id:`t_${n}_1`,label:"Blok 1 · Review & Lamaran (2 jam)",sub:["40 mnt Review mingguan (tab Analitik) + ulang kesalahan","40 mnt [Hören] Santai: Easy German / Nicos Weg ulang","40 mnt "+((w>=6&&w<=16)?"[Lamaran] "+ADM[(w-6)%ADM.length]:"[Wortschatz] SRS ringan + ulang kosakata minggu ini")]}];
+    if(di===6)t=[{id:`t_${n}_1`,label:"Review & Lamaran",blk:1,sub:["40 mnt Review mingguan (tab Analitik) + ulang kesalahan","40 mnt [Hören] Santai: Easy German / Nicos Weg ulang","40 mnt "+((w>=6&&w<=16)?"[Lamaran] "+ADM[(w-6)%ADM.length]:"[Wortschatz] SRS ringan + ulang kosakata minggu ini")]}];
     else{const out=w>=17&&w<=23?EX[di]:(di===3&&w<3?"[Sprechen] Monolog 5 mnt: rutinitas harian":B3[di]);
-      t=[{id:`t_${n}_1`,label:"Blok 1 · Teori & Input (2 jam)",sub:[`70 mnt [Grammatik] ${top}: ${ROLE[di]}`,`50 mnt [Hören/Lesen] ${res(w)}`]},{id:`t_${n}_2`,label:"Blok 2 · Praktik & Output (2 jam)",sub:["20 mnt [Wortschatz] SRS Quizlet","70 mnt "+out,"30 mnt Koreksi + catat kesalahan di Log"]}]}
+      t=[{id:`t_${n}_1`,label:"Teori & Input",blk:1,sub:[`70 mnt [Grammatik] ${ROLE[di]}`,`50 mnt [Hören/Lesen] ${res(w)}`]},{id:`t_${n}_2`,label:"Praktik & Output",blk:2,sub:["20 mnt [Wortschatz] SRS Quizlet","70 mnt "+out,"30 mnt Koreksi + catat kesalahan di Log"]}]}
     t.push({id:`t_${n}_4`,rw:1});
-    const o={n,w,di,ds:ymd(d),my:ymd(d).slice(0,7),shift:SHIFTS[si],ph:phase(w),tasks:t};days.push(o);byDate[o.ds]=o;d.setDate(d.getDate()+1)}}
+    t.forEach(x=>{if(x.blk)x.time=SHIFTS[si]['b'+x.blk]});
+    const o={n,w,di,top,ds:ymd(d),my:ymd(d).slice(0,7),shift:SHIFTS[si],ph:phase(w),tasks:t};days.push(o);byDate[o.ds]=o;d.setDate(d.getDate()+1)}}
 
 /* ===== Login (cosmetic; proteksi nyata = Firebase Rules) ===== */
 const h53=s=>{let a=0xdeadbeef,b=0x41c6ce57;for(let i=0,c;i<s.length;i++){c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return 4294967296*(2097151&b)+(a>>>0)};
@@ -219,15 +233,15 @@ function render(){if(!inited)return;renderToday();renderDays();progress();render
 /* ===== Jadwal ===== */
 const modeFor=k=>A.modes[k]||((byDate[k]&&byDate[k].di===6)?'ringan':'normal');
 function tog(id){const v=!A.tasks[id];if(v)A.tasks[id]=true;else delete A.tasks[id];
-  if(v&&id.endsWith('_4')){const n=id.split('_')[1];if(!A.rewards['d'+n]){A.rewards['d'+n]=REW[(n-1)%REW.length];if(db&&cloud)db.child('rewards/d'+n).set(A.rewards['d'+n])}}
-  localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child('tasks/'+id).set(v?true:null);render()}
+  if(v&&id.endsWith('_4')){const n=id.split('_')[1];if(!A.rewards['d'+n]){A.rewards['d'+n]=REW[(n-1)%REW.length];if(db&&cloud)db.child('rewards/d'+n).set(A.rewards['d'+n]).catch(cloudFail)}}
+  localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child('tasks/'+id).set(v?true:null).catch(e=>{cloudFail(e);if(v)A.tasks[id]=true;else delete A.tasks[id];localStorage.setItem(SK,JSON.stringify(A));render()});render()}
 const REW=["Main Nintendo Switch","Baca buku","Improve diri (olahraga / skill baru)","Build website / proyek coding","Hal produktif lain"];
-const BRK='<div class="text-xs mut italic ml-8 mt-3">Istirahat 30 mnt: jauh dari layar, jalan / makan / stretching</div>';
+const brk=d=>`<div class="text-xs mut italic ml-8 mt-4">Istirahat 30 mnt (${d.tasks[0].time.split('-')[1]}-${d.tasks[1].time.split('-')[0]}): jauh dari layar, jalan / makan / stretching</div>`;
 function taskRow(t){const on=A.tasks[t.id];
   if(t.rw){const n=t.id.split('_')[1],cur=A.rewards['d'+n]||REW[(n-1)%REW.length];
     return `<div class="flex gap-3 mt-4 items-start"><span class="chk ${on?'on':''} cursor-pointer" onclick="tog('${t.id}')"></span><div class="flex-1"><div class="text-sm font-semibold ${on?'line-through opacity-50':''}" style="color:var(--or)">Me time (reward)</div><select class="inp mt-1" style="padding:5px 8px;font-size:.8rem" onchange="setRew(${n},this.value)">${REW.map(r=>`<option ${r===cur?'selected':''}>${r}</option>`).join('')}</select></div></div>`}
-  return `<div class="flex gap-3 mt-3 cursor-pointer" onclick="tog('${t.id}')"><span class="chk ${on?'on':''}"></span><div class="${on?'opacity-50':''}"><div class="text-sm font-semibold ${on?'line-through':''}">${esc(t.label)}</div>${t.sub.map(x=>`<div class="text-xs mut">${esc(x)}</div>`).join('')}</div></div>`}
-const taskList=d=>d.tasks.map((t,i)=>taskRow(t)+(i===0&&d.tasks.length===3?BRK:'')).join('');
+  return `<div class="flex gap-3 mt-4 cursor-pointer" onclick="tog('${t.id}')"><span class="chk ${on?'on':''}"></span><div class="flex-1 ${on?'opacity-50':''}"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><span class="bdg">Blok ${t.blk}</span><span class="text-sm font-semibold ${on?'line-through':''}">${esc(t.label)}</span></div><div class="dur mt-1">${t.time} · 2 jam</div>${t.sub.map(x=>{const m=x.match(/^(\d+ mnt) (.*)$/);return m?`<div class="sr"><span class="mut">${m[1]}</span><span>${esc(m[2])}</span></div>`:`<div class="sr"><span></span><span>${esc(x)}</span></div>`}).join('')}</div></div>`}
+const taskList=d=>d.tasks.map((t,i)=>taskRow(t)+(i===0&&d.tasks.length===3?brk(d):'')).join('');
 function setRew(n,v){A.rewards['d'+n]=v;save('rewards')}
 function setMode(k,v){A.modes[k]=v;save('modes')}
 let tS=+localStorage.getItem('irzi_timer')||0;
@@ -237,12 +251,12 @@ setInterval(()=>{const e=$('tclock');if(e){const s=tS?Math.floor((Date.now()-tS)
 function renderToday(){const el=$('today'),k=ymd(new Date()),d=byDate[k];
   if(!d){el.innerHTML=`<b>${new Date()<START?'Jadwal mulai Selasa, 3 Nov 2026':'Jadwal 332 hari selesai'}</b>`;return}
   const m=modeFor(k);
-  el.innerHTML=`<div class="flex flex-wrap justify-between gap-3 mb-2"><div><div class="text-xl font-bold">Hari ini: Hari ${d.n} (minggu ${d.w})</div><div class="text-xs mut">${d.shift.name} ${d.shift.time}, belajar ${d.shift.study}</div><div class="text-xs mt-1" style="color:var(--or)">${d.ph}</div></div>
+  el.innerHTML=`<div class="flex flex-wrap justify-between gap-3 mb-2"><div><div class="text-xl font-bold">Hari ini: Hari ${d.n} (minggu ${d.w})</div><div class="text-sm mt-1">${d.shift.name} <span class="mut">· kerja ${d.shift.time}</span></div><div class="text-xs mt-1" style="color:var(--or)">${d.ph}</div><div class="text-xs mut mt-1">Fokus minggu ini: ${esc(d.top)}</div></div>
   <div class="text-right"><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${A.studyHours[k]||0} jam tercatat</div></div></div>
   ${taskList(d)}<div class="flex items-center gap-3 mt-4"><button class="btn" onclick="toggleTimer()">${tS?'Stop & catat':'Mulai timer'}</button><span id="tclock" class="font-mono text-sm">00:00:00</span></div>`}
 function renderDays(){const m=$('mon').value,k=ymd(new Date());
   $('days').innerHTML=days.filter(d=>d.my===m).map(d=>{const sc=d.tasks.filter(t=>!t.rw).length,done=d.tasks.filter(t=>!t.rw&&A.tasks[t.id]).length,all=d.ds===k;
-    return `<div id="d-${d.n}" class="glass p-4" style="${done===sc?'border-color:var(--gr)':all?'border-color:var(--bl)':''}"><div class="flex justify-between"><div><b>Hari ${d.n}</b> <span class="text-xs mut ml-1">${d.ds}${all?' · hari ini':''}</span><div class="text-[11px] font-semibold" style="color:var(--bl)">${d.shift.name} · ${d.shift.study} · ${MODE[modeFor(d.ds)].split(' ')[0]}</div></div><span class="text-sm font-bold mut">${done}/${sc}</span></div><p class="text-xs font-semibold mt-1" style="color:var(--or)">${d.ph}</p>${taskList(d)}</div>`}).join('')}
+    return `<div id="d-${d.n}" class="glass p-4" style="${done===sc?'border-color:var(--gr)':all?'border-color:var(--bl)':''}"><div class="flex justify-between"><div><b>Hari ${d.n}</b> <span class="text-xs mut ml-1">${d.ds}${all?' · hari ini':''}</span><div class="text-xs mut mt-1">${d.shift.name} · kerja ${d.shift.time}</div></div><div class="text-right"><div class="text-sm font-bold mut">${done}/${sc} blok</div><div class="dur">${MODE[modeFor(d.ds)].split(' ')[0]}</div></div></div><p class="text-xs font-semibold mt-2" style="color:var(--or)">${d.ph}</p><p class="text-xs mut">Fokus: ${esc(d.top)}</p>${taskList(d)}</div>`}).join('')}
 function goToday(){const k=ymd(new Date());if([...$('mon').options].some(o=>o.value===k.slice(0,7)))$('mon').value=k.slice(0,7);renderDays();const d=byDate[k];if(d){const e=$('d-'+d.n);e&&e.scrollIntoView({behavior:'smooth',block:'center'})}}
 function progress(){let tot=0,ok=0,exp=0;const el=Math.max(0,Math.min(TOTAL,Math.floor((new Date()-START)/864e5)+1));days.forEach(d=>d.tasks.forEach(t=>{if(!t.rw){tot++;if(A.tasks[t.id])ok++;if(d.n<=el)exp++}}));
   $('pTxt').textContent=`${Math.round(ok/tot*100)}% (${ok}/${tot} blok)`;$('pBar').style.width=Math.round(ok/tot*100)+'%';
@@ -269,7 +283,7 @@ function renderJournals(){$('journals').innerHTML=A.journals.length?A.journals.m
 function addLamaran(){const p=$('lP').value.trim();if(!p)return toast('Nama perusahaan wajib diisi');
   A.lamaran.push({id:Date.now(),pt:p,deadline:$('lD').value,status:$('lS').value});$('lP').value='';save('lamaran')}
 function setSt(id,v){A.lamaran.find(x=>x.id===id).status=v;save('lamaran')}
-function togDoc(i){if(A.docs[i])delete A.docs[i];else A.docs[i]=true;localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child('docs/'+i).set(A.docs[i]?true:null);render()}
+function togDoc(i){if(A.docs[i])delete A.docs[i];else A.docs[i]=true;localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child('docs/'+i).set(A.docs[i]?true:null).catch(cloudFail);render()}
 function renderLam(){$('lams').innerHTML=A.lamaran.length?A.lamaran.map(l=>{const dd=l.deadline?Math.ceil((new Date(l.deadline+'T00:00:00')-new Date())/864e5):null;
   return `<div class="glass p-4"><div class="flex justify-between"><b>${esc(l.pt)}</b><span class="x" onclick="del('lamaran',${l.id})">hapus</span></div><p class="text-xs mb-3 ${dd!==null&&dd<=14&&dd>=0?'font-bold':'mut'}" style="${dd!==null&&dd<=14&&dd>=0?'color:var(--or)':''}">Deadline ${esc(l.deadline||'-')}${dd===null?'':dd<0?' (lewat)':` (${dd} hari lagi)`}</p><select class="inp" onchange="setSt(${l.id},this.value)">${STAT.map(s=>`<option ${s===l.status?'selected':''}>${s}</option>`).join('')}</select></div>`}).join(''):'<p class="text-sm mut">Belum ada lamaran. Jendela lamaran terbuka Okt 2026 sampai Feb 2027, jadi mulai dari riset.</p>';
   $('docs').innerHTML=DOCS.map((d,i)=>`<div class="flex gap-3 cursor-pointer" onclick="togDoc(${i})"><span class="chk ${A.docs[i]?'on':''}"></span><span class="text-sm ${A.docs[i]?'line-through opacity-50':''}">${d}</span></div>`).join('')}
