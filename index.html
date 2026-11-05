@@ -144,10 +144,10 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
     <div class="glass p-5">
       <h2 class="text-xl font-bold mb-1">Disiplin</h2>
-      <p class="text-xs mut mb-3">Streak = hari berturut-turut ≥2 jam. Hari Libur tidak memutus streak.</p>
+      <p class="text-xs mut mb-3">Streak = hari berturut-turut ≥2 jam. Hari Libur tidak memutus streak. Form di bawah mengganti total menit pada tanggal yang dipilih (untuk koreksi).</p>
       <div class="text-3xl font-extrabold" id="streak">0</div>
       <div class="text-xs mut mb-4">hari streak · <span id="wk"></span></div>
-      <div class="flex flex-wrap gap-2"><input type="date" id="sD" class="inp" style="flex:1 1 9rem"><input type="number" id="sH" step="0.5" min="0" max="12" class="inp" style="width:80px" placeholder="Jam"><button class="btn" onclick="logHours()">OK</button></div>
+      <div class="flex flex-wrap gap-2"><input type="date" id="sD" class="inp" style="flex:1 1 9rem"><input type="number" id="sH" inputmode="numeric" min="0" max="1440" class="inp" style="width:90px" placeholder="Menit"><button class="btn" onclick="logHours()">Set</button></div>
     </div>
     <div class="glass p-5 lg:col-span-2">
       <h2 class="text-xl font-bold mb-1">7 hari terakhir</h2><p class="text-xs mut mb-4">Garis putus = 4 jam</p>
@@ -193,7 +193,7 @@ function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;setTimeou
 const RESET_ID='r2026-11-05';
 function cloudFail(e){if(!db)return;try{db.off()}catch(x){}cloud=false;localStorage.setItem('irzi_cloud_off','1');const s=$('sync');s.textContent='Lokal saja (cloud menolak)';s.style.color='var(--rd)';toast('Firebase menolak menyimpan ('+((e&&e.code)||'error')+'). Perubahan disimpan di browser ini. Cek Firebase Rules.')}
 function retryCloud(){localStorage.removeItem('irzi_cloud_off');location.reload()}
-function wipeProgress(){const z=()=>{A.tasks={};A.studyHours={};A.modes={};A.rewards={};localStorage.setItem(SK,JSON.stringify(A))};z();tS=0;localStorage.removeItem('irzi_timer');localStorage.setItem('irzi_reset',RESET_ID);
+function wipeProgress(){const z=()=>{A.tasks={};A.studyHours={};A.modes={};A.rewards={};localStorage.setItem(SK,JSON.stringify(A))};z();localStorage.setItem('irzi_reset',RESET_ID);
   if(db&&cloud)db.update({tasks:null,studyHours:null,modes:null,rewards:null,'meta/reset':RESET_ID}).catch(e=>{cloudFail(e);z();render()});render()}
 function resetAsk(){if(confirm('Reset semua progres belajar (centang blok, jam belajar, mode hari, pilihan reward)?\nJurnal, lamaran, log kesalahan, dan skor level check tidak ikut terhapus. Tidak bisa dibatalkan.')){wipeProgress();toast('Progres direset')}}
 function connect(){
@@ -262,16 +262,18 @@ function taskRow(t){const on=A.tasks[t.id];
 const taskList=d=>d.tasks.map((t,i)=>taskRow(t)+(i===0&&d.tasks.length===3?brk(d):'')).join('');
 function setRew(n,v){A.rewards['d'+n]=v;save('rewards')}
 function setMode(k,v){A.modes[k]=v;save('modes')}
-let tS=+localStorage.getItem('irzi_timer')||0;
-function toggleTimer(){if(tS){const hrs=Math.round((Date.now()-tS)/36e4)/10,k=ymd(new Date());A.studyHours[k]=Math.round(((A.studyHours[k]||0)+hrs)*10)/10;tS=0;localStorage.removeItem('irzi_timer');toast('Tercatat +'+hrs+' jam');save('studyHours')}
-  else{tS=Date.now();localStorage.setItem('irzi_timer',tS);renderToday()}}
-setInterval(()=>{const e=$('tclock');if(e){const s=tS?Math.floor((Date.now()-tS)/1e3):0;e.textContent=[s/3600,s/60%60,s%60].map(x=>String(Math.floor(x)).padStart(2,'0')).join(':')}},1000);
+const TGT={normal:240,ringan:120,libur:0};
+const mn=h=>Math.round(h*60);
+const fmt=h=>{const m=mn(h);if(!m)return'';const j=Math.floor(m/60),r=m%60;return j?j+'j'+(r?String(r).padStart(2,'0'):''):m+'m'};
+const fmtL=h=>{const m=mn(h);return Math.floor(m/60)+'j '+(m%60)+'m'};
+function addMin(q){const m=q||parseInt($('tM').value);if(!(m>=1&&m<=720))return toast('Isi menit antara 1 dan 720');
+  const k=ymd(new Date());A.studyHours[k]=Math.round(((A.studyHours[k]||0)+m/60)*10000)/10000;toast('+'+m+' mnt tercatat (total hari ini '+mn(A.studyHours[k])+' mnt)');save('studyHours')}
 function renderToday(){const el=$('today'),k=ymd(new Date()),d=byDate[k];
   if(!d){el.innerHTML=`<b>${new Date()<START?'Jadwal mulai Selasa, 3 Nov 2026':'Jadwal 332 hari selesai'}</b>`;return}
   const m=modeFor(k);
   el.innerHTML=`<div class="flex flex-wrap justify-between gap-3 mb-2"><div><div class="text-xl font-bold">Hari ini: Hari ${d.n} (minggu ${d.w})</div><div class="text-sm mt-1">${d.shift.name} <span class="mut">· kerja ${d.shift.time}</span></div><div class="text-xs mt-1" style="color:var(--or)">${d.ph}</div><div class="text-xs mut mt-1">Fokus minggu ini: ${esc(d.top)}</div></div>
-  <div class="text-right"><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${A.studyHours[k]||0} jam tercatat</div></div></div>
-  ${taskList(d)}<div class="flex items-center gap-3 mt-4"><button class="btn" onclick="toggleTimer()">${tS?'Stop & catat':'Mulai timer'}</button><span id="tclock" class="font-mono text-sm">00:00:00</span></div>`}
+  <div class="text-right"><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${mn(A.studyHours[k]||0)} / ${TGT[m]} mnt</div></div></div>
+  ${taskList(d)}<div class="mt-4 pt-3" style="border-top:1px solid var(--bd)"><div class="text-xs mut mb-2">Catat waktu belajar hari ini (menit)</div><div class="flex flex-wrap items-center gap-2"><input id="tM" type="number" inputmode="numeric" min="1" max="720" class="inp" style="width:100px" placeholder="Menit" onkeydown="if(event.key==='Enter')addMin()"><button class="btn" onclick="addMin()">Tambah</button><button class="btn sec" onclick="addMin(30)">+30</button><button class="btn sec" onclick="addMin(60)">+60</button><button class="btn sec" onclick="addMin(120)">+120</button></div></div>`}
 function renderDays(){const m=$('mon').value,k=ymd(new Date());
   $('days').innerHTML=days.filter(d=>d.my===m).map(d=>{const sc=d.tasks.filter(t=>!t.rw).length,done=d.tasks.filter(t=>!t.rw&&A.tasks[t.id]).length,all=d.ds===k;
     return `<div id="d-${d.n}" class="glass p-4" style="${done===sc?'border-color:var(--gr)':all?'border-color:var(--bl)':''}"><div class="flex justify-between"><div><b>Hari ${d.n}</b> <span class="text-xs mut ml-1">${d.ds}${all?' · hari ini':''}</span><div class="text-xs mut mt-1">${d.shift.name} · kerja ${d.shift.time}</div></div><div class="text-right"><div class="text-sm font-bold mut">${done}/${sc} blok</div><div class="dur">${MODE[modeFor(d.ds)].split(' ')[0]}</div></div></div><p class="text-xs font-semibold mt-2" style="color:var(--or)">${d.ph}</p><p class="text-xs mut">Fokus: ${esc(d.top)}</p>${taskList(d)}</div>`}).join('')}
@@ -310,22 +312,22 @@ function renderLam(){$('lams').innerHTML=A.lamaran.length?A.lamaran.map(l=>{cons
   $('docs').innerHTML=DOCS.map((d,i)=>`<div class="flex gap-3 cursor-pointer" onclick="togDoc(${i})"><span class="chk ${A.docs[i]?'on':''}"></span><span class="text-sm ${A.docs[i]?'line-through opacity-50':''}">${d}</span></div>`).join('')}
 
 /* ===== Analitik ===== */
-function logHours(){const d=$('sD').value,h=parseFloat($('sH').value);if(!d||isNaN(h))return toast('Tanggal dan jam wajib diisi');A.studyHours[d]=h;$('sH').value='';save('studyHours')}
+function logHours(){const d=$('sD').value,m=parseInt($('sH').value);if(!d||isNaN(m)||m<0||m>1440)return toast('Isi tanggal dan menit (0-1440)');A.studyHours[d]=Math.round(m/60*10000)/10000;$('sH').value='';save('studyHours')}
 function lastDays(n){const o=[],d=new Date();for(let i=n-1;i>=0;i--){const x=new Date(d);x.setDate(d.getDate()-i);o.push(ymd(x))}return o}
 function addMistake(){const t=$('mTx').value.trim();if(!t)return;A.mistakes.unshift({id:Date.now(),text:t,cat:$('mCt').value,count:1,isResolved:false});$('mTx').value='';save('mistakes')}
 function seedMistakes(){[["Perfekt: pakai sein untuk kata kerja gerak (fahren, gehen)","Perfekt-Hilfsverb"],["V2: verba tetap di posisi 2 setelah adverbia (Heute gehe ich…)","V2"],["Hanya Nomen yang diawali huruf besar, bukan adjektiva","Rechtschreibung"]].forEach(([text,cat],i)=>A.mistakes.push({id:Date.now()+i,text,cat,count:1,isResolved:false}));save('mistakes')}
 function mUp(id,f){const m=A.mistakes.find(x=>x.id===id);f(m);save('mistakes')}
 function autoReview(){const h=lastDays(7).reduce((s,k)=>s+(A.studyHours[k]||0),0),b=days.filter(d=>lastDays(7).includes(d.ds)).reduce((s,d)=>s+d.tasks.filter(t=>!t.rw&&A.tasks[t.id]).length,0),top=[...A.mistakes].filter(m=>!m.isResolved).sort((a,b)=>b.count-a.count)[0],cur=byDate[ymd(new Date())];
-  if(cur&&!$('wW').value)$('wW').value='Minggu '+cur.w;$('wS').value=`Jam 7 hari terakhir: ${h}/24. Blok selesai: ${b}. Kesalahan teratas: ${top?top.text+' (×'+top.count+')':'-'}.`}
+  if(cur&&!$('wW').value)$('wW').value='Minggu '+cur.w;$('wS').value=`Waktu 7 hari terakhir: ${fmtL(h)} / 24 jam. Blok selesai: ${b}. Kesalahan teratas: ${top?top.text+' (×'+top.count+')':'-'}.`}
 function addReview(){const w=$('wW').value.trim(),p=$('w1').value.trim();if(!w||!p)return toast('Minggu dan Prioritas 1 wajib diisi');
   A.weeklyReviews.unshift({id:Date.now(),week:w,summary:$('wS').value,p1:p,p2:$('w2').value,p3:$('w3').value});['wW','wS','w1','w2','w3'].forEach(i=>$(i).value='');save('weeklyReviews')}
 function renderAnalytics(){
   $('mist').innerHTML=A.mistakes.length?[...A.mistakes].sort((a,b)=>(a.isResolved-b.isResolved)||(b.count-a.count)).map(m=>`<div class="flex gap-3 items-start p-2 rounded-lg" style="background:var(--in)"><span class="chk ${m.isResolved?'on':''} cursor-pointer" onclick="mUp(${m.id},x=>x.isResolved=!x.isResolved)"></span><div class="flex-1 text-sm ${m.isResolved?'line-through opacity-50':''}">${esc(m.text)}<div class="text-[11px] mut">${esc(m.cat||'Lainnya')} · ×${m.count||1}</div></div><button class="btn sec" style="padding:2px 8px" onclick="mUp(${m.id},x=>x.count=(x.count||1)+1)">+1</button><span class="x" onclick="del('mistakes',${m.id})">x</span></div>`).join(''):'<p class="text-sm mut">Belum ada log. <button class="btn sec" onclick="seedMistakes()">Muat 3 pola awal</button></p>';
   $('reviews').innerHTML=A.weeklyReviews.map(r=>`<div class="glass p-4"><div class="flex justify-between"><b>${esc(r.week)}</b><span class="x" onclick="del('weeklyReviews',${r.id})">hapus</span></div><p class="text-xs mut italic my-2">${esc(r.summary)}</p><ol class="text-xs space-y-1 list-decimal ml-4"><li>${esc(r.p1)}</li>${r.p2?`<li>${esc(r.p2)}</li>`:''}${r.p3?`<li>${esc(r.p3)}</li>`:''}</ol></div>`).join('');
   let s=0,first=true;const d=new Date();for(let i=0;i<400;i++){const k=ymd(d),h=A.studyHours[k]||0;if(modeFor(k)!=='libur'){if(h>=2)s++;else if(!first)break}first=false;d.setDate(d.getDate()-1)}
-  $('streak').textContent=s;const L=lastDays(7);$('wk').textContent=`7 hari: ${L.reduce((a,k)=>a+(A.studyHours[k]||0),0).toFixed(1)}/24 jam`;
+  $('streak').textContent=s;const L=lastDays(7);$('wk').textContent=`7 hari: ${fmtL(L.reduce((a,k)=>a+(A.studyHours[k]||0),0))} / 24 jam`;
   $('chart').innerHTML='<div style="position:absolute;left:0;right:0;bottom:80%;border-top:1px dashed var(--mu);opacity:.5"></div>'+L.map(k=>{const h=A.studyHours[k]||0,c=modeFor(k)==='libur'?'var(--mu)':h>=4?'var(--gr)':h>=2?'var(--or)':'var(--rd)';
-    return `<div class="flex-1 flex flex-col justify-end items-center h-full" title="${h} jam"><span class="text-[10px] font-bold">${h||''}</span><div style="width:100%;max-width:36px;height:${Math.min(100,h/5*100)}%;background:${c};border-radius:4px 4px 0 0"></div></div>`}).join('');
+    return `<div class="flex-1 flex flex-col justify-end items-center h-full" title="${mn(h)} mnt"><span class="text-[10px] font-bold">${fmt(h)}</span><div style="width:100%;max-width:36px;height:${Math.min(100,h/5*100)}%;background:${c};border-radius:4px 4px 0 0"></div></div>`}).join('');
   $('chartL').innerHTML=L.map(k=>`<div class="flex-1 text-center">${new Date(k+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short'})}</div>`).join('')}
 </script>
 </body>
