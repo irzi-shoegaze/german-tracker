@@ -1,64 +1,84 @@
 <!DOCTYPE html>
-<html lang="id" class="dark-theme">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#fbf4ec">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Compass">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🐰%3C/text%3E%3C/svg%3E">
 <title>Dashboard Jerman: Chemielaborant 2028</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
-:root{--bg:#f5f5f7;--gl:rgba(255,255,255,.65);--bd:rgba(255,255,255,.9);--tx:#1d1d1f;--mu:#6e6e73;--bl:#0071e3;--bh:#0060c0;--gr:#34c759;--or:#f56200;--rd:#ff3b30;--in:rgba(255,255,255,.5);--gs:rgba(255,255,255,.9)}
-.dark-theme{--bg:#000;--gl:rgba(30,30,35,.6);--bd:rgba(255,255,255,.15);--tx:#f5f5f7;--mu:#a1a1a6;--bl:#2997ff;--bh:#5ab0ff;--gr:#32d74b;--or:#ff9f0a;--rd:#ff453a;--in:rgba(0,0,0,.3);--gs:rgba(28,28,32,.92)}
-body{background:var(--bg);color:var(--tx);font-family:'Plus Jakarta Sans',system-ui,sans-serif;min-height:100vh;min-height:100dvh;overflow-x:hidden}
-.mesh{position:fixed;inset:0;z-index:-1;filter:blur(60px);background:radial-gradient(circle at 10% 20%,rgba(41,151,255,.2),transparent 40%),radial-gradient(circle at 90% 80%,rgba(50,215,75,.15),transparent 40%)}
-.glass{background:var(--gl);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--bd);border-radius:20px}
-.mut{color:var(--mu)}
-.inp{background:var(--in);border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:9px 12px;font-size:.88rem;width:100%;outline:none}
-.inp:focus{border-color:var(--bl);box-shadow:0 0 0 3px rgba(41,151,255,.2)}
-.btn{background:var(--bl);color:#fff;border-radius:12px;padding:9px 16px;font-weight:600;font-size:.88rem;cursor:pointer;transition:background .2s}
-.btn:hover{background:var(--bh)}
-.btn.sec{background:var(--in);color:var(--tx);border:1px solid var(--bd)}
-.btn.sec:hover{background:var(--bd)}
-.x{color:var(--rd);font-size:.75rem;cursor:pointer;opacity:.7}.x:hover{opacity:1}
-.nav{display:flex;gap:4px;padding:5px;border-radius:99px;background:var(--in);border:1px solid var(--bd);overflow-x:auto;max-width:100%}
-.pill{padding:7px 14px;border-radius:99px;font-size:.82rem;font-weight:600;color:var(--mu);white-space:nowrap}
-.pill.on{background:var(--tx);color:var(--bg)}
-.chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--mu);flex-shrink:0;margin-top:2px;display:grid;place-content:center}
-.chk.on{background:var(--gr);border-color:var(--gr)}.chk.on::after{content:"";width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-bottom:2px}
-.view{display:none}.view.on{display:block}
-.bdg{background:var(--bl);color:#fff;border-radius:8px;padding:2px 9px;font-size:.72rem;font-weight:700}
-.dur{color:var(--mu);font-size:.74rem}
-.sr{display:grid;grid-template-columns:3.4rem 1fr;gap:8px;font-size:.78rem;line-height:1.4;margin-top:4px}
-.shake{animation:sh .4s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
-:root,*{-webkit-tap-highlight-color:transparent}
+:root{--bg:#fbf4ec;--gl:#fffdf9;--bd:#e6d7c6;--bs:#d3bda6;--tx:#33261d;--mu:#7c6757;--bl:#b8562c;--bh:#9d4722;--gr:#3f6b5a;--or:#9a6a13;--rd:#a6372b;--in:#f4eadf;--gs:#fffdf9;--sf:#f0e2d2;--ps:#f8e3d4;--as:#dfeae2;--ws:#f7e9c9;--fd:'Fraunces',Georgia,serif;--bn:#fffdf9}
+.dark-theme{--bg:#1c1511;--gl:#261d17;--bd:#3a2d24;--bs:#4d3b2e;--tx:#f4e9dd;--mu:#b8a592;--bl:#e07a4a;--bh:#f0956a;--gr:#7fb89f;--or:#e0b25a;--rd:#ef7d6b;--in:#2f251d;--gs:#261d17;--sf:#33271e;--ps:#3d2a1f;--as:#243a31;--ws:#3b3016;--bn:#f4e9dd}
+*{-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--tx);font-family:'Manrope',system-ui,-apple-system,sans-serif;min-height:100vh;min-height:100dvh;overflow-x:hidden}
+h1,h2,.disp{font-family:var(--fd);font-weight:600}
+.glass{background:var(--gl);border:1px solid var(--bd);border-radius:20px}
+.mut{color:var(--mu)}.cap{font-size:.75rem;color:var(--mu);font-weight:700}
+.cap2{font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mu);font-weight:700}
+.inp{background:var(--in);border:1px solid var(--bd);color:var(--tx);border-radius:12px;padding:10px 12px;font-size:.9rem;width:100%}
+.inp:focus{outline:2px solid var(--bl);outline-offset:1px;border-color:var(--bl)}
 input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appearance:none;text-align:left}
+.btn{background:var(--bl);color:#fffaf4;border-radius:999px;padding:9px 18px;font-weight:700;font-size:.85rem;cursor:pointer;transition:background .14s,transform .14s}
+.btn:hover{background:var(--bh)}.btn:active{transform:scale(.97)}
+.btn.sec{background:transparent;color:var(--tx);border:1px solid var(--bd)}.btn.sec:hover{background:var(--in)}
+.x{color:var(--rd);font-size:.75rem;cursor:pointer;opacity:.8}.x:hover{opacity:1}
+.view{display:none}.view.on{display:block}
+.shake{animation:sh .4s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.nav{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--in);overflow-x:auto}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border-radius:999px;font-size:.82rem;font-weight:700;color:var(--mu);white-space:nowrap;transition:color .14s}
+.pill svg,.spill svg{width:16px;height:16px;flex-shrink:0}
+.pill.on{background:var(--gl);color:var(--tx);box-shadow:0 1px 2px rgba(51,38,29,.14)}
+.chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--mu);flex-shrink:0;margin-top:2px;display:grid;place-content:center}
+.chk.on{background:var(--gr);border-color:var(--gr)}.chk.on::after{content:"";width:5px;height:9px;border:solid #fffaf4;border-width:0 2px 2px 0;transform:rotate(45deg);margin-bottom:2px}
+.blk{border:1px solid var(--bd);background:var(--gl);border-radius:12px;padding:12px;margin-top:10px}
+.blk.done{background:var(--as);border-color:var(--as)}
+.ico{width:34px;height:34px;border-radius:12px;background:var(--ps);color:var(--bl);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--fd);flex-shrink:0}
+.blk.done .ico{background:var(--gl);color:var(--gr)}
+.cb{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--bs);flex-shrink:0;display:grid;place-content:center;cursor:pointer;background:transparent;transition:.14s}
+.cb.on{background:var(--gr);border-color:var(--gr)}
+.cb.on::after{content:"";width:6px;height:11px;border:solid #fffaf4;border-width:0 2px 2px 0;transform:rotate(45deg);margin-bottom:2px}
+.sr{display:grid;grid-template-columns:3.4rem 1fr;gap:8px;font-size:.78rem;line-height:1.4;margin-top:4px}
+.stat{padding:12px}.stat b{display:block;font-family:var(--fd);font-size:1.45rem;line-height:1.2}
+.hero{display:flex;align-items:center;gap:12px;background:var(--sf);border-radius:20px;padding:12px 16px;margin-bottom:16px}
+.spill{display:inline-flex;align-items:center;gap:6px;background:var(--ps);color:var(--bl);padding:8px 12px;border-radius:999px;font-weight:800;font-size:.82rem;flex-shrink:0}
+.side{padding:12px 16px 0}.brand,.tools{display:none}
+.wrap{max-width:1120px;margin:0 auto;padding:12px 16px calc(6rem + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:max(.5rem,env(safe-area-inset-top));margin-bottom:12px}
+.top h1{font-size:1.6rem;line-height:1.15;margin-top:2px}
 @media(max-width:640px){
-  .inp{font-size:16px}
-  header.hd{padding:max(.75rem,env(safe-area-inset-top)) 1rem .5rem}
-  header.hd .btn{padding:7px 11px;font-size:.78rem}
-  main.mn{padding:.75rem .85rem calc(6rem + env(safe-area-inset-bottom))}
-  .glass{border-radius:18px}
-  .glass.p-5{padding:1rem}
-  .btn{min-height:42px}
-  .chk{width:24px;height:24px}
-  .nav{position:fixed;left:.6rem;right:.6rem;bottom:calc(.5rem + env(safe-area-inset-bottom));z-index:40;justify-content:space-between;gap:2px;padding:5px;background:var(--gs);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 30px rgba(0,0,0,.35)}
-  .pill{flex:1;text-align:center;padding:10px 2px;font-size:.74rem}
-  #days .glass{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--gs)}
+  .side{padding:0}
+  .nav{position:fixed;left:.6rem;right:.6rem;bottom:calc(.5rem + env(safe-area-inset-bottom));z-index:40;justify-content:space-between;background:var(--gl);border:1px solid var(--bd);box-shadow:0 -2px 14px rgba(51,38,29,.12);padding:6px}
+  .pill{flex:1;flex-direction:column;gap:2px;padding:7px 2px;font-size:.68rem;min-height:48px}
+  .pill svg{width:19px;height:19px}.pill.on{background:var(--ps);color:var(--bl);box-shadow:none}
+  .inp{font-size:16px}.btn{min-height:42px}.glass.p-5{padding:1rem}
   #toast{bottom:calc(5.6rem + env(safe-area-inset-bottom));left:1rem;right:1rem}
+}
+@media(min-width:641px) and (max-width:1023px){.side{display:flex;justify-content:center;padding-top:16px}.wrap{padding-bottom:2rem}}
+@media(min-width:1024px){
+  #app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
+  .side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:28px 18px;background:var(--gl);border-right:1px solid var(--bd)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .side .nav{flex-direction:column;background:transparent;padding:0;margin-top:28px;gap:4px;overflow:visible}
+  .side .pill{justify-content:flex-start;padding:12px 14px;border-radius:12px;font-size:.9rem}
+  .side .pill.on{background:var(--ps);color:var(--bl);box-shadow:none}
+  .tools{display:flex;flex-direction:column;gap:8px;margin-top:auto;font-size:.78rem}
+  .wrap{padding:32px 40px 40px;width:100%;max-width:1180px}
+  #v-jadwal.on{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+  #v-jadwal>*{margin-bottom:0!important}
+  #today{grid-column:1;grid-row:1/span 4;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}#prog,#stats,.mon,#days{grid-column:2}#days{grid-template-columns:1fr!important}
 }
 </style>
 </head>
 <body>
-<div class="mesh"></div>
 
-<div id="lock" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.25)">
+<div id="lock" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background:var(--bg)">
   <div id="lockCard" class="glass max-w-sm w-full p-8 text-center">
-    <h2 class="text-2xl font-bold mb-1">Private Dashboard</h2>
+    <div id="lockBunny" class="flex justify-center mb-2"></div><h2 class="text-2xl mb-1">Private Dashboard</h2>
     <p class="text-sm mut mb-6">Ausbildung Chemielaborant 2028</p>
     <input type="password" id="pw" class="inp text-center text-lg mb-3" placeholder="Sandi akses" onkeydown="if(event.key==='Enter')login()">
     <button class="btn w-full" onclick="login()">Buka dashboard</button>
@@ -67,32 +87,25 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
 </div>
 
 <div id="app" class="hidden">
-<header class="hd p-4 sm:p-6 max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
-  <div><h1 class="font-bold text-lg">Mastery Compass</h1><p class="text-xs mut">Sinkronisasi: <b id="sync" class="cursor-pointer" onclick="if(localStorage.getItem('irzi_cloud_off'))retryCloud()">Memeriksa…</b></p></div>
-  <nav class="nav">
-    <button class="pill on" onclick="view('jadwal',this)">Jadwal</button>
-    <button class="pill" onclick="view('tes',this)">Level Check</button>
-    <button class="pill" onclick="view('jurnal',this)">Jurnal</button>
-    <button class="pill" onclick="view('lamaran',this)">Lamaran</button>
-    <button class="pill" onclick="view('analitik',this)">Analitik</button>
-  </nav>
-  <div class="flex gap-2">
-    <button class="btn sec" onclick="exportData()">Backup</button>
-    <button class="btn sec" onclick="document.documentElement.classList.toggle('dark-theme')">Tema</button>
-    <button class="btn sec" onclick="lockApp()">Kunci</button>
-  </div>
-</header>
-
-<main class="mn max-w-6xl mx-auto p-4 sm:p-6">
+<aside class="side">
+  <div class="brand"><span id="brandBunny"></span><div><b class="disp" style="font-size:1.15rem">Mastery Compass</b><div class="text-xs mut">Ausbildung 2028</div></div></div>
+  <nav class="nav"><button class="pill on" onclick="view('jadwal',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Jadwal</span></button><button class="pill" onclick="view('tes',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg><span>Level Check</span></button><button class="pill" onclick="view('jurnal',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6h4M2 10h4M2 14h4M2 18h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M16 2v20"/></svg><span>Jurnal</span></button><button class="pill" onclick="view('lamaran',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="7" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>Lamaran</span></button><button class="pill" onclick="view('analitik',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg><span>Analitik</span></button></nav>
+  <div class="tools"><div class="mut">Sinkronisasi: <b class="sync cursor-pointer" onclick="if(localStorage.getItem('irzi_cloud_off'))retryCloud()">Memeriksa…</b></div><button class="btn sec" onclick="exportData()">Backup</button><button class="btn sec" onclick="document.documentElement.classList.toggle('dark-theme')">Tema</button><button class="btn sec" onclick="lockApp()">Kunci</button></div>
+</aside>
+<div class="wrap">
+<header class="top"><div class="min-w-0"><p class="cap2" id="dateCap"></p><h1 id="greet"></h1></div><div class="spill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span id="stk">0 hari</span></div></header>
+<section id="hero" class="hero"></section>
+<main>
 
 <section id="v-jadwal" class="view on">
   <div id="today" class="glass p-5 mb-5"></div>
-  <div class="glass p-5 mb-5">
+  <div id="prog" class="glass p-5 mb-5">
     <div class="flex justify-between text-sm font-semibold mb-2"><span>Progres belajar (blok belajar saja, tanpa reward)</span><span id="pTxt" style="color:var(--bl)"></span></div>
     <div class="h-2 rounded-full" style="background:var(--in)"><div id="pBar" class="h-full rounded-full" style="width:0;background:var(--bl);transition:width .6s"></div></div>
     <p id="pTrack" class="text-xs mut mt-2"></p>
   </div>
-  <div class="flex gap-2 mb-4"><select id="mon" class="inp" style="width:auto" onchange="renderDays()"></select><button class="btn sec" onclick="goToday()">Ke hari ini</button></div>
+  <div id="stats" class="grid grid-cols-3 gap-3 mb-5"></div>
+  <div class="mon flex gap-2 mb-4"><select id="mon" class="inp" style="width:auto" onchange="renderDays()"></select><button class="btn sec" onclick="goToday()">Ke hari ini</button></div>
   <div id="days" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
 </section>
 
@@ -170,9 +183,11 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
     </div>
   </div>
   <div id="reviews" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+  <div class="glass p-5 mt-6 lg:hidden"><h2 class="text-lg mb-2">Pengaturan</h2><p class="text-xs mut mb-3">Sinkronisasi: <b class="sync cursor-pointer" onclick="if(localStorage.getItem('irzi_cloud_off'))retryCloud()">Memeriksa…</b></p><div class="flex flex-wrap gap-2"><button class="btn sec" onclick="exportData()">Backup</button><button class="btn sec" onclick="document.documentElement.classList.toggle('dark-theme')">Tema</button><button class="btn sec" onclick="lockApp()">Kunci</button></div></div>
   <div class="glass p-5 mt-6 flex flex-wrap items-center justify-between gap-3"><div><b>Reset progres</b><p class="text-xs mut">Menghapus centang blok, jam belajar, mode hari, dan pilihan reward. Jurnal, lamaran, log kesalahan, dan skor tetap aman.</p></div><button class="btn sec" style="color:var(--rd)" onclick="resetAsk()">Reset</button></div>
 </section>
 </main>
+</div>
 <div id="toast" class="fixed bottom-6 right-6 glass px-5 py-3 text-sm font-medium" style="opacity:0;transition:opacity .3s;pointer-events:none"></div>
 </div>
 
@@ -190,25 +205,36 @@ try{A=norm(JSON.parse(localStorage.getItem(SK)))}catch(e){}
 try{firebase.initializeApp(CFG);db=firebase.database().ref('user_irzi/app_data')}catch(e){}
 function save(k){localStorage.setItem(SK,JSON.stringify(A));const keep=A[k];if(db&&cloud)db.child(k).set(keep).catch(e=>{cloudFail(e);A[k]=keep;localStorage.setItem(SK,JSON.stringify(A));render()});render()}
 function toast(m){const t=$('toast');t.textContent=m;t.style.opacity=1;setTimeout(()=>t.style.opacity=0,2500)}
-const RESET_ID='r2026-11-05';
-function cloudFail(e){if(!db)return;try{db.off()}catch(x){}cloud=false;localStorage.setItem('irzi_cloud_off','1');const s=$('sync');s.textContent='Lokal saja (cloud menolak)';s.style.color='var(--rd)';toast('Firebase menolak menyimpan ('+((e&&e.code)||'error')+'). Perubahan disimpan di browser ini. Cek Firebase Rules.')}
+const RESET_ID='r2026-11-11';
+function cloudFail(e){if(!db)return;try{db.off()}catch(x){}cloud=false;localStorage.setItem('irzi_cloud_off','1');setSync('Lokal saja (cloud menolak)','var(--rd)');toast('Firebase menolak menyimpan ('+((e&&e.code)||'error')+'). Perubahan disimpan di browser ini. Cek Firebase Rules.')}
 function retryCloud(){localStorage.removeItem('irzi_cloud_off');location.reload()}
 function wipeProgress(){const z=()=>{A.tasks={};A.studyHours={};A.modes={};A.rewards={};localStorage.setItem(SK,JSON.stringify(A))};z();localStorage.setItem('irzi_reset',RESET_ID);
   if(db&&cloud)db.update({tasks:null,studyHours:null,modes:null,rewards:null,'meta/reset':RESET_ID}).catch(e=>{cloudFail(e);z();render()});render()}
 function resetAsk(){if(confirm('Reset semua progres belajar (centang blok, jam belajar, mode hari, pilihan reward)?\nJurnal, lamaran, log kesalahan, dan skor level check tidak ikut terhapus. Tidak bisa dibatalkan.')){wipeProgress();toast('Progres direset')}}
 function connect(){
-  const st=(t,c)=>{$('sync').textContent=t;$('sync').style.color=c||''};
-  if(!db){st('Mode lokal');return}
-  if(localStorage.getItem('irzi_cloud_off')){st('Lokal saja (klik untuk coba cloud lagi)','var(--rd)');return}
+  const st=setSync;
+  if(!db){st('Mode lokal');if(localStorage.getItem('irzi_reset')!==RESET_ID)wipeProgress();return}
+  if(localStorage.getItem('irzi_cloud_off')){st('Lokal saja (klik untuk coba cloud lagi)','var(--rd)');if(localStorage.getItem('irzi_reset')!==RESET_ID)wipeProgress();return}
+  let first=true;
   db.on('value',s=>{const v=s.val();cloud=true;if(v){A=norm(v);localStorage.setItem(SK,JSON.stringify(A))}else db.set(A).catch(cloudFail);
+    if(first){first=false;if(!v||!v.meta||v.meta.reset!==RESET_ID)wipeProgress()}
     st('Tersinkron','var(--gr)');render()},()=>st('Offline (data lokal)','var(--rd)'));
 }
 function exportData(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(A,null,1)],{type:'application/json'}));a.download='jerman-backup-'+ymd(new Date())+'.json';a.click()}
 
+const setSync=(t,c)=>document.querySelectorAll('.sync').forEach(e=>{e.textContent=t;e.style.color=c||''});
+const bunny=(z=64,ch)=>`<svg width="${z}" height="${z}" viewBox="0 0 104 104" aria-hidden="true" style="flex-shrink:0"><g transform="translate(0,-4)"><path d="M42 30c-3-10-1-17 5-17s9 7 7 17z" fill="var(--bn)" stroke="var(--bs)" stroke-width="2" stroke-linejoin="round"/><path d="M56 30c-2-10 0-17 6-17s9 7 7 17z" fill="var(--bn)" stroke="var(--bs)" stroke-width="2" stroke-linejoin="round"/><path d="M48 34c-2-6-1-10 2-10s4 4 2 10z" fill="var(--ps)"/><path d="M58 34c-1-6 0-10 3-10s4 4 2 10z" fill="var(--ps)"/><ellipse cx="52" cy="56" rx="26" ry="24" fill="var(--bn)" stroke="var(--bs)" stroke-width="2"/><circle cx="44" cy="53" r="2.6" fill="#33261d"/><circle cx="60" cy="53" r="2.6" fill="#33261d"/><path d="M49 61q3 3 6 0" fill="none" stroke="#33261d" stroke-width="2" stroke-linecap="round"/><circle cx="36" cy="61" r="4" fill="var(--ps)"/><circle cx="68" cy="61" r="4" fill="var(--ps)"/></g>${ch?'<g fill="var(--or)" stroke="var(--or)" stroke-width="2" stroke-linecap="round"><path d="M14 30v8M10 34h8"/><path d="M90 22v8M86 26h8"/><path d="M20 74v6M17 77h6"/></g>':''}</svg>`;
+$('lockBunny').innerHTML=bunny(76);$('brandBunny').innerHTML=bunny(44);
+function calcStreak(){let s=0,first=true;const d=new Date();for(let i=0;i<400;i++){const k=ymd(d),h=A.studyHours[k]||0;if(modeFor(k)!=='libur'){if(h>=2)s++;else if(!first)break}first=false;d.setDate(d.getDate()-1)}return s}
+function todayBlocks(){const d=byDate[ymd(new Date())];if(!d)return[0,0];const t=d.tasks.filter(x=>!x.rw);return[t.filter(x=>A.tasks[x.id]).length,t.length]}
+function renderTop(){const n=new Date(),h=n.getHours();$('dateCap').textContent=n.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});$('greet').textContent=(h<11?'Guten Morgen':h<17?'Guten Tag':'Guten Abend')+', Irzi';$('stk').textContent=calcStreak()+' hari'}
+function renderHero(){const k=ymd(new Date()),[a,b]=todayBlocks(),all=b>0&&a===b;
+  $('hero').innerHTML=bunny(72,all)+`<div class="min-w-0"><p class="text-sm font-bold">${all?'Semua blok selesai. Hasen ist stolz!':a?a+' dari '+b+' blok beres. Lanjut, ya!':'Siap belajar hari ini?'}</p><p class="text-xs mut mt-1">${mn(A.studyHours[k]||0)} dari ${TGT[modeFor(k)]} menit target tercatat.</p></div>`}
+function renderStats(){const [a,b]=todayBlocks(),k=ymd(new Date());$('stats').innerHTML=[['Streak',calcStreak(),'hari'],['Menit',mn(A.studyHours[k]||0),'hari ini'],['Blok',a+'/'+b,'selesai']].map(x=>`<div class="glass stat"><span class="cap">${x[0]}</span><b>${x[1]}</b><span class="cap">${x[2]}</span></div>`).join('')}
 /* ===== Kurikulum (per minggu, mulai Selasa 3 Nov 2026) ===== */
-const START=new Date(2026,10,3),TOTAL=332;
+const START=new Date(2026,10,11),TOTAL=324;
 const SHIFTS=[{name:"Shift 2",time:"16:00-00:00",b1:"09:00-11:00",b2:"11:30-13:30"},{name:"Shift 1",time:"08:00-16:00",b1:"18:30-20:30",b2:"21:00-23:00"},{name:"Shift 3",time:"00:00-08:00",b1:"16:00-18:00",b2:"18:30-20:30"}];
-const TOP=["Tes diagnostik (Start Deutsch 1 + A2 Übungssatz) lalu A1: V2, W-Fragen, Akkusativ","A1: Modalverben, trennbare Verben, Perfekt dasar (haben/sein) + Level check A1 di hari ke-6","A2: Dativ + Wechselpräpositionen","A2: Perfekt vs Präteritum (sein/haben/Modal), reflexive Verben","A2: Nebensätze weil / dass / wenn / ob","A2: Komparativ-Superlativ, Konnektoren (deshalb, trotzdem)","A2: Adjektivdeklination (Nom/Akk/Dat)","A2: Wiederholung total + Level check A2 di hari ke-6","B1: Nebensätze obwohl, damit, während, bevor, nachdem","B1: Relativsätze (Nom/Akk/Dat)","B1: Passiv (Vorgangs- dan Zustandspassiv)","B1: Konjunktiv II (Bitten, Ratschläge, Wünsche)","B1: Infinitiv mit zu, um…zu, Futur I","B1: Verben mit Präpositionen + Pronominaladverbien","B1: Präteritum lengkap + zweiteilige Konnektoren","B1: Wiederholung grammar + Wortliste B1 Goethe","Modellsatz B1: Lesen & Hören (waktu asli)","Modellsatz B1: Schreiben (3 aufgaben)","Modellsatz B1: Sprechen Teil 1-3 + perbaiki modul terlemah","Modellsatz penuh + analisis kesalahan","Modellsatz penuh #2 + tutup celah terakhir","Modellsatz penuh #3, target ≥70 tiap modul","Pekan ujian: Modellsatz ringan + istirahat cukup (target ujian pertama Apr 2027)"];
+const TOP=["Tes diagnostik (Start Deutsch 1 + A2 Übungssatz) lalu A1: V2, W-Fragen, Akkusativ","A1: Modalverben, trennbare Verben, Perfekt dasar (haben/sein) + Level check A1 (Sabtu)","A2: Dativ + Wechselpräpositionen","A2: Perfekt vs Präteritum (sein/haben/Modal), reflexive Verben","A2: Nebensätze weil / dass / wenn / ob","A2: Komparativ-Superlativ, Konnektoren (deshalb, trotzdem)","A2: Adjektivdeklination (Nom/Akk/Dat)","A2: Wiederholung total + Level check A2 (Sabtu)","B1: Nebensätze obwohl, damit, während, bevor, nachdem","B1: Relativsätze (Nom/Akk/Dat)","B1: Passiv (Vorgangs- dan Zustandspassiv)","B1: Konjunktiv II (Bitten, Ratschläge, Wünsche)","B1: Infinitiv mit zu, um…zu, Futur I","B1: Verben mit Präpositionen + Pronominaladverbien","B1: Präteritum lengkap + zweiteilige Konnektoren","B1: Wiederholung grammar + Wortliste B1 Goethe","Modellsatz B1: Lesen & Hören (waktu asli)","Modellsatz B1: Schreiben (3 aufgaben)","Modellsatz B1: Sprechen Teil 1-3 + perbaiki modul terlemah","Modellsatz penuh + analisis kesalahan","Modellsatz penuh #2 + tutup celah terakhir","Modellsatz penuh #3, target ≥70 tiap modul","Pekan ujian: Modellsatz ringan + istirahat cukup (target ujian pertama Apr 2027)","Fachsprache Chemie, persiapan interview & berangkat (retake bila perlu)"];
 const ROLE=["Pengantar + contoh","Übung 1","Übung 2 + koreksi","Anwenden: tulis/ucapkan","Ulang kesalahan minggu ini","Mini-quiz mandiri"];
 const B3=["[Schreiben] Tulis 5-8 kalimat Jerman dari topik hari ini","[Sprechen] Shadowing 15 mnt + rekam dan dengarkan ulang","[Schreiben] Teks pendek sesuai level, koreksi sendiri","[Sprechen] Sesi partner (italki/Tandem/Discord) atau monolog 5 mnt","[Schreiben] Email/forum sesuai level; cek V2, sein/haben, huruf besar","[Hören] Dictation 15 mnt + ulang bagian yang salah dengar"];
 const EX=["[Schreiben] Aufgabe 1: email informal","[Schreiben] Aufgabe 2: forum/pendapat","[Schreiben] Aufgabe 3: email formal","[Sprechen] Teil 1: gemeinsam planen (dengan partner)","[Sprechen] Teil 2-3: presentasi + tanya jawab","[Simulasi] Satu modul penuh, catat skor di Level Check"];
@@ -216,15 +242,15 @@ const ADM=["riset perusahaan Tier 1/2 (syarat, deadline, tes seleksi)","draf Leb
 const res=w=>w<=2?"Nicos Weg A1: Lektion berikutnya + transkrip":w<=8?"Nicos Weg A2 / Easy German: 1 episode + ringkas 3 kalimat":w<=16?"Nicos Weg B1 / DW langsam gesprochene Nachrichten + catat 10 kata":w<=23?"Modellsatz Lesen & Hören dengan batas waktu asli":"Teks & audio Fachsprache (SOP, GHS) + latihan interview";
 const phase=w=>w<=2?"Fase 1: Reset A1":w<=8?"Fase 2: A2 penuh":w<=16?"Fase 3: B1 inti":w<=22?"Fase 4: Drill ujian B1":w==23?"Fase 5: Pekan ujian":"Fase 6: Retake bila perlu, Fachsprache, interview";
 let days=[],byDate={};
-function gen(){let d=new Date(START),si=0;days=[];byDate={};
+function gen(){let d=new Date(START),si=1;days=[];byDate={};const off=(START.getDay()+6)%7;
   for(let n=1;n<=TOTAL;n++){if(n>1&&d.getDay()===0)si=(si+1)%3;
-    const w=Math.floor((n-1)/7)+1,di=(n-1)%7,top=TOP[Math.min(w,TOP.length)-1];let t;
-    if(di===6)t=[{id:`t_${n}_1`,label:"Review & Lamaran",blk:1,sub:["40 mnt Review mingguan (tab Analitik) + ulang kesalahan","40 mnt [Hören] Santai: Easy German / Nicos Weg ulang","40 mnt "+((w>=6&&w<=16)?"[Lamaran] "+ADM[(w-6)%ADM.length]:"[Wortschatz] SRS ringan + ulang kosakata minggu ini")]}];
-    else{const out=w>=17&&w<=23?EX[di]:(di===3&&w<3?"[Sprechen] Monolog 5 mnt: rutinitas harian":B3[di]);
-      t=[{id:`t_${n}_1`,label:"Teori & Input",blk:1,sub:[`70 mnt [Grammatik] ${ROLE[di]}`,`50 mnt [Hören/Lesen] ${res(w)}`]},{id:`t_${n}_2`,label:"Praktik & Output",blk:2,sub:["20 mnt [Wortschatz] SRS Quizlet","70 mnt "+out,"30 mnt Koreksi + catat kesalahan di Log"]}]}
+    const dw=(d.getDay()+6)%7,w=Math.floor((n-1+off)/7)+1,sun=dw===6,ri=w===1?dw-off:dw,top=TOP[Math.min(w,TOP.length)-1];let t;
+    if(sun)t=[{id:`t_${n}_1`,label:"Review & Lamaran",blk:1,sub:["40 mnt Review mingguan (tab Analitik) + ulang kesalahan","40 mnt [Hören] Santai: Easy German / Nicos Weg ulang","40 mnt "+((w>=6&&w<=16)?"[Lamaran] "+ADM[(w-6)%ADM.length]:"[Wortschatz] SRS ringan + ulang kosakata minggu ini")]}];
+    else{const out=w>=17&&w<=23?EX[ri]:(ri===3&&w<3?"[Sprechen] Monolog 5 mnt: rutinitas harian":B3[ri]);
+      t=[{id:`t_${n}_1`,label:"Teori & Input",blk:1,sub:[`70 mnt [Grammatik] ${ROLE[ri]}`,`50 mnt [Hören/Lesen] ${res(w)}`]},{id:`t_${n}_2`,label:"Praktik & Output",blk:2,sub:["20 mnt [Wortschatz] SRS Quizlet","70 mnt "+out,"30 mnt Koreksi + catat kesalahan di Log"]}]}
     t.push({id:`t_${n}_4`,rw:1});
     t.forEach(x=>{if(x.blk)x.time=SHIFTS[si]['b'+x.blk]});
-    const o={n,w,di,top,ds:ymd(d),my:ymd(d).slice(0,7),shift:SHIFTS[si],ph:phase(w),tasks:t};days.push(o);byDate[o.ds]=o;d.setDate(d.getDate()+1)}}
+    const o={n,w,di:dw,sun,top,ds:ymd(d),my:ymd(d).slice(0,7),shift:SHIFTS[si],ph:phase(w),tasks:t};days.push(o);byDate[o.ds]=o;d.setDate(d.getDate()+1)}}
 
 /* ===== Login (cosmetic; proteksi nyata = Firebase Rules) ===== */
 const h53=s=>{let a=0xdeadbeef,b=0x41c6ce57;for(let i=0,c;i<s.length;i++){c=s.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return 4294967296*(2097151&b)+(a>>>0)};
@@ -246,19 +272,19 @@ function init(){if(inited)return;inited=true;gen();
   $('lS').innerHTML=STAT.map(s=>`<option>${s}</option>`).join('');
   $('mCt').innerHTML=MCAT.map(s=>`<option>${s}</option>`).join('');
   connect();render()}
-function render(){if(!inited)return;renderToday();renderDays();progress();renderTests();renderJournals();renderLam();renderAnalytics()}
+function render(){if(!inited)return;renderTop();renderHero();renderToday();renderStats();renderDays();progress();renderTests();renderJournals();renderLam();renderAnalytics()}
 
 /* ===== Jadwal ===== */
-const modeFor=k=>A.modes[k]||((byDate[k]&&byDate[k].di===6)?'ringan':'normal');
+const modeFor=k=>A.modes[k]||((byDate[k]&&byDate[k].sun)?'ringan':'normal');
 function tog(id){const v=!A.tasks[id];if(v)A.tasks[id]=true;else delete A.tasks[id];
   if(v&&id.endsWith('_4')){const n=id.split('_')[1];if(!A.rewards['d'+n]){A.rewards['d'+n]=REW[(n-1)%REW.length];if(db&&cloud)db.child('rewards/d'+n).set(A.rewards['d'+n]).catch(cloudFail)}}
   localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child('tasks/'+id).set(v?true:null).catch(e=>{cloudFail(e);if(v)A.tasks[id]=true;else delete A.tasks[id];localStorage.setItem(SK,JSON.stringify(A));render()});render()}
 const REW=["Main Nintendo Switch","Baca buku","Improve diri (olahraga / skill baru)","Build website / proyek coding","Hal produktif lain"];
-const brk=d=>`<div class="text-xs mut italic ml-8 mt-4">Istirahat 30 mnt (${d.tasks[0].time.split('-')[1]}-${d.tasks[1].time.split('-')[0]}): jauh dari layar, jalan / makan / stretching</div>`;
+const brk=d=>`<div class="text-xs mut italic text-center mt-3">Istirahat 30 mnt (${d.tasks[0].time.split('-')[1]}-${d.tasks[1].time.split('-')[0]}): jauh dari layar, jalan / makan / stretching</div>`;
 function taskRow(t){const on=A.tasks[t.id];
   if(t.rw){const n=t.id.split('_')[1],cur=A.rewards['d'+n]||REW[(n-1)%REW.length];
-    return `<div class="flex gap-3 mt-4 items-start"><span class="chk ${on?'on':''} cursor-pointer" onclick="tog('${t.id}')"></span><div class="flex-1"><div class="text-sm font-semibold ${on?'line-through opacity-50':''}" style="color:var(--or)">Me time (reward)</div><select class="inp mt-1" style="padding:5px 8px;font-size:.8rem" onchange="setRew(${n},this.value)">${REW.map(r=>`<option ${r===cur?'selected':''}>${r}</option>`).join('')}</select></div></div>`}
-  return `<div class="flex gap-3 mt-4 cursor-pointer" onclick="tog('${t.id}')"><span class="chk ${on?'on':''}"></span><div class="flex-1 ${on?'opacity-50':''}"><div class="flex flex-wrap items-center gap-x-3 gap-y-1"><span class="bdg">Blok ${t.blk}</span><span class="text-sm font-semibold ${on?'line-through':''}">${esc(t.label)}</span></div><div class="dur mt-1">${t.time} · 2 jam</div>${t.sub.map(x=>{const m=x.match(/^(\d+ mnt) (.*)$/);return m?`<div class="sr"><span class="mut">${m[1]}</span><span>${esc(m[2])}</span></div>`:`<div class="sr"><span></span><span>${esc(x)}</span></div>`}).join('')}</div></div>`}
+    return `<div class="blk" style="background:var(--in);border-color:var(--in)"><div class="flex gap-3 items-center"><div class="flex-1 min-w-0"><div class="text-sm font-bold" style="color:var(--or)">Me time (reward)</div><select class="inp mt-1" style="padding:6px 10px;font-size:.82rem" onchange="setRew(${n},this.value)">${REW.map(r=>`<option ${r===cur?'selected':''}>${r}</option>`).join('')}</select></div><button class="cb ${on?'on':''}" aria-pressed="${!!on}" aria-label="Tandai reward" onclick="tog('${t.id}')"></button></div></div>`}
+  return `<article class="blk ${on?'done':''}"><div class="flex gap-3 items-start"><span class="ico">${t.blk}</span><div class="flex-1 min-w-0"><div class="cap">${t.time} · 2 jam</div><h3 class="text-sm font-bold mt-1">${esc(t.label)}</h3>${t.sub.map(x=>{const m=x.match(/^(\d+ mnt) (.*)$/);return m?`<div class="sr"><span class="mut">${m[1]}</span><span>${esc(m[2])}</span></div>`:`<div class="sr"><span></span><span>${esc(x)}</span></div>`}).join('')}</div><button class="cb ${on?'on':''}" aria-pressed="${!!on}" aria-label="Tandai ${esc(t.label)}" onclick="tog('${t.id}')"></button></div></article>`}
 const taskList=d=>d.tasks.map((t,i)=>taskRow(t)+(i===0&&d.tasks.length===3?brk(d):'')).join('');
 function setRew(n,v){A.rewards['d'+n]=v;save('rewards')}
 function setMode(k,v){A.modes[k]=v;save('modes')}
@@ -269,11 +295,9 @@ const fmtL=h=>{const m=mn(h);return Math.floor(m/60)+'j '+(m%60)+'m'};
 function addMin(q){const m=q||parseInt($('tM').value);if(!(m>=1&&m<=720))return toast('Isi menit antara 1 dan 720');
   const k=ymd(new Date());A.studyHours[k]=Math.round(((A.studyHours[k]||0)+m/60)*10000)/10000;toast('+'+m+' mnt tercatat (total hari ini '+mn(A.studyHours[k])+' mnt)');save('studyHours')}
 function renderToday(){const el=$('today'),k=ymd(new Date()),d=byDate[k];
-  if(!d){el.innerHTML=`<b>${new Date()<START?'Jadwal mulai Selasa, 3 Nov 2026':'Jadwal 332 hari selesai'}</b>`;return}
+  if(!d){el.innerHTML=`<b>${new Date()<START?'Jadwal mulai Rabu, 11 Nov 2026':'Jadwal selesai'}</b>`;return}
   const m=modeFor(k);
-  el.innerHTML=`<div class="flex flex-wrap justify-between gap-3 mb-2"><div><div class="text-xl font-bold">Hari ini: Hari ${d.n} (minggu ${d.w})</div><div class="text-sm mt-1">${d.shift.name} <span class="mut">· kerja ${d.shift.time}</span></div><div class="text-xs mt-1" style="color:var(--or)">${d.ph}</div><div class="text-xs mut mt-1">Fokus minggu ini: ${esc(d.top)}</div></div>
-  <div class="text-right"><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${mn(A.studyHours[k]||0)} / ${TGT[m]} mnt</div></div></div>
-  ${taskList(d)}<div class="mt-4 pt-3" style="border-top:1px solid var(--bd)"><div class="text-xs mut mb-2">Catat waktu belajar hari ini (menit)</div><div class="flex flex-wrap items-center gap-2"><input id="tM" type="number" inputmode="numeric" min="1" max="720" class="inp" style="width:100px" placeholder="Menit" onkeydown="if(event.key==='Enter')addMin()"><button class="btn" onclick="addMin()">Tambah</button><button class="btn sec" onclick="addMin(30)">+30</button><button class="btn sec" onclick="addMin(60)">+60</button><button class="btn sec" onclick="addMin(120)">+120</button></div></div>`}
+  el.innerHTML=`<div class="flex flex-wrap items-start justify-between gap-3"><div class="min-w-0"><h2 class="text-xl">Jadwal hari ini</h2><div class="cap mt-1">Hari ${d.n} · minggu ${d.w} · ${d.shift.name}, kerja ${d.shift.time}</div><div class="text-xs mt-1" style="color:var(--or);font-weight:700">${d.ph}</div><div class="text-xs mut mt-1">Fokus minggu ini: ${esc(d.top)}</div></div><div><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${mn(A.studyHours[k]||0)} / ${TGT[m]} mnt</div></div></div>${taskList(d)}<div class="mt-4 pt-3" style="border-top:1px dashed var(--bd)"><div class="cap mb-2">Catat waktu belajar hari ini (menit)</div><div class="flex flex-wrap items-center gap-2"><input id="tM" type="number" inputmode="numeric" min="1" max="720" class="inp" style="width:100px" placeholder="Menit" onkeydown="if(event.key==='Enter')addMin()"><button class="btn" onclick="addMin()">Tambah</button><button class="btn sec" onclick="addMin(30)">+30</button><button class="btn sec" onclick="addMin(60)">+60</button><button class="btn sec" onclick="addMin(120)">+120</button></div></div>`}
 function renderDays(){const m=$('mon').value,k=ymd(new Date());
   $('days').innerHTML=days.filter(d=>d.my===m).map(d=>{const sc=d.tasks.filter(t=>!t.rw).length,done=d.tasks.filter(t=>!t.rw&&A.tasks[t.id]).length,all=d.ds===k;
     return `<div id="d-${d.n}" class="glass p-4" style="${done===sc?'border-color:var(--gr)':all?'border-color:var(--bl)':''}"><div class="flex justify-between"><div><b>Hari ${d.n}</b> <span class="text-xs mut ml-1">${d.ds}${all?' · hari ini':''}</span><div class="text-xs mut mt-1">${d.shift.name} · kerja ${d.shift.time}</div></div><div class="text-right"><div class="text-sm font-bold mut">${done}/${sc} blok</div><div class="dur">${MODE[modeFor(d.ds)].split(' ')[0]}</div></div></div><p class="text-xs font-semibold mt-2" style="color:var(--or)">${d.ph}</p><p class="text-xs mut">Fokus: ${esc(d.top)}</p>${taskList(d)}</div>`}).join('')}
@@ -324,8 +348,7 @@ function addReview(){const w=$('wW').value.trim(),p=$('w1').value.trim();if(!w||
 function renderAnalytics(){
   $('mist').innerHTML=A.mistakes.length?[...A.mistakes].sort((a,b)=>(a.isResolved-b.isResolved)||(b.count-a.count)).map(m=>`<div class="flex gap-3 items-start p-2 rounded-lg" style="background:var(--in)"><span class="chk ${m.isResolved?'on':''} cursor-pointer" onclick="mUp(${m.id},x=>x.isResolved=!x.isResolved)"></span><div class="flex-1 text-sm ${m.isResolved?'line-through opacity-50':''}">${esc(m.text)}<div class="text-[11px] mut">${esc(m.cat||'Lainnya')} · ×${m.count||1}</div></div><button class="btn sec" style="padding:2px 8px" onclick="mUp(${m.id},x=>x.count=(x.count||1)+1)">+1</button><span class="x" onclick="del('mistakes',${m.id})">x</span></div>`).join(''):'<p class="text-sm mut">Belum ada log. <button class="btn sec" onclick="seedMistakes()">Muat 3 pola awal</button></p>';
   $('reviews').innerHTML=A.weeklyReviews.map(r=>`<div class="glass p-4"><div class="flex justify-between"><b>${esc(r.week)}</b><span class="x" onclick="del('weeklyReviews',${r.id})">hapus</span></div><p class="text-xs mut italic my-2">${esc(r.summary)}</p><ol class="text-xs space-y-1 list-decimal ml-4"><li>${esc(r.p1)}</li>${r.p2?`<li>${esc(r.p2)}</li>`:''}${r.p3?`<li>${esc(r.p3)}</li>`:''}</ol></div>`).join('');
-  let s=0,first=true;const d=new Date();for(let i=0;i<400;i++){const k=ymd(d),h=A.studyHours[k]||0;if(modeFor(k)!=='libur'){if(h>=2)s++;else if(!first)break}first=false;d.setDate(d.getDate()-1)}
-  $('streak').textContent=s;const L=lastDays(7);$('wk').textContent=`7 hari: ${fmtL(L.reduce((a,k)=>a+(A.studyHours[k]||0),0))} / 24 jam`;
+  const s=calcStreak();$('streak').textContent=s;const L=lastDays(7);$('wk').textContent=`7 hari: ${fmtL(L.reduce((a,k)=>a+(A.studyHours[k]||0),0))} / 24 jam`;
   $('chart').innerHTML='<div style="position:absolute;left:0;right:0;bottom:80%;border-top:1px dashed var(--mu);opacity:.5"></div>'+L.map(k=>{const h=A.studyHours[k]||0,c=modeFor(k)==='libur'?'var(--mu)':h>=4?'var(--gr)':h>=2?'var(--or)':'var(--rd)';
     return `<div class="flex-1 flex flex-col justify-end items-center h-full" title="${mn(h)} mnt"><span class="text-[10px] font-bold">${fmt(h)}</span><div style="width:100%;max-width:36px;height:${Math.min(100,h/5*100)}%;background:${c};border-radius:4px 4px 0 0"></div></div>`}).join('');
   $('chartL').innerHTML=L.map(k=>`<div class="flex-1 text-center">${new Date(k+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short'})}</div>`).join('')}
