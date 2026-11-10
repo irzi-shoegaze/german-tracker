@@ -46,6 +46,7 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
 .stat{padding:12px}.stat b{display:block;font-family:var(--fd);font-size:1.45rem;line-height:1.2}
 .hero{display:flex;align-items:center;gap:12px;background:var(--sf);border-radius:20px;padding:12px 16px;margin-bottom:16px}
 .spill{display:inline-flex;align-items:center;gap:6px;background:var(--ps);color:var(--bl);padding:8px 12px;border-radius:999px;font-weight:800;font-size:.82rem;flex-shrink:0}
+.mins{margin-top:16px;padding-top:12px;border-top:1px dashed var(--bd)}
 .side{padding:12px 16px 0}.brand,.tools{display:none}
 .wrap{max-width:1120px;margin:0 auto;padding:12px 16px calc(6rem + env(safe-area-inset-bottom))}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:max(.5rem,env(safe-area-inset-top));margin-bottom:12px}
@@ -59,6 +60,12 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
   #toast{bottom:calc(5.6rem + env(safe-area-inset-bottom));left:1rem;right:1rem}
 }
 @media(min-width:641px) and (max-width:1023px){.side{display:flex;justify-content:center;padding-top:16px}.wrap{padding-bottom:2rem}}
+@media(min-width:768px){
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .tgrid>.blk:nth-child(1){grid-column:1;grid-row:1}.tgrid>.blk:nth-child(3){grid-column:2;grid-row:1}.tgrid>.brk{grid-column:1/-1;grid-row:2}
+  .trow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.trow>.blk{margin-top:0}
+  .trow .mins{margin:0;padding:12px;border:1px solid var(--bd);border-radius:12px}
+}
 @media(min-width:1024px){
   #app{display:grid;grid-template-columns:260px minmax(0,1fr);min-height:100vh}
   .side{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:28px 18px;background:var(--gl);border-right:1px solid var(--bd)}
@@ -68,9 +75,9 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
   .side .pill.on{background:var(--ps);color:var(--bl);box-shadow:none}
   .tools{display:flex;flex-direction:column;gap:8px;margin-top:auto;font-size:.78rem}
   .wrap{padding:32px 40px 40px;width:100%;max-width:1180px}
-  #v-jadwal.on{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}
+  #v-jadwal.on{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
   #v-jadwal>*{margin-bottom:0!important}
-  #today{grid-column:1;grid-row:1/span 4;position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto}#prog,#stats,.mon,#days{grid-column:2}#days{grid-template-columns:1fr!important}
+  #today,.mon,#days{grid-column:1/-1}#prog{grid-column:span 2}#stats{grid-column:3}.stat{padding:10px}
 }
 </style>
 </head>
@@ -105,8 +112,8 @@ input[type=date],input[type=time]{min-height:42px;-webkit-appearance:none;appear
     <p id="pTrack" class="text-xs mut mt-2"></p>
   </div>
   <div id="stats" class="grid grid-cols-3 gap-3 mb-5"></div>
-  <div class="mon flex gap-2 mb-4"><select id="mon" class="inp" style="width:auto" onchange="renderDays()"></select><button class="btn sec" onclick="goToday()">Ke hari ini</button></div>
-  <div id="days" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+  <div class="mon flex flex-wrap items-center gap-2 mb-4"><h2 class="text-lg w-full sm:w-auto sm:flex-1">Jadwal ke depan</h2><select id="mon" class="inp" style="width:auto" onchange="renderDays()"></select><button class="btn sec" onclick="goToday()">Ke hari ini</button></div>
+  <div id="days" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4"></div>
 </section>
 
 <section id="v-tes" class="view">
@@ -280,7 +287,7 @@ function tog(id){const v=!A.tasks[id];if(v)A.tasks[id]=true;else delete A.tasks[
   if(v&&id.endsWith('_4')){const n=id.split('_')[1];if(!A.rewards['d'+n]){A.rewards['d'+n]=REW[(n-1)%REW.length];if(db&&cloud)db.child('rewards/d'+n).set(A.rewards['d'+n]).catch(cloudFail)}}
   localStorage.setItem(SK,JSON.stringify(A));if(db&&cloud)db.child('tasks/'+id).set(v?true:null).catch(e=>{cloudFail(e);if(v)A.tasks[id]=true;else delete A.tasks[id];localStorage.setItem(SK,JSON.stringify(A));render()});render()}
 const REW=["Main Nintendo Switch","Baca buku","Improve diri (olahraga / skill baru)","Build website / proyek coding","Hal produktif lain"];
-const brk=d=>`<div class="text-xs mut italic text-center mt-3">Istirahat 30 mnt (${d.tasks[0].time.split('-')[1]}-${d.tasks[1].time.split('-')[0]}): jauh dari layar, jalan / makan / stretching</div>`;
+const brk=d=>`<div class="brk text-xs mut italic text-center mt-3">Istirahat 30 mnt (${d.tasks[0].time.split('-')[1]}-${d.tasks[1].time.split('-')[0]}): jauh dari layar, jalan / makan / stretching</div>`;
 function taskRow(t){const on=A.tasks[t.id];
   if(t.rw){const n=t.id.split('_')[1],cur=A.rewards['d'+n]||REW[(n-1)%REW.length];
     return `<div class="blk" style="background:var(--in);border-color:var(--in)"><div class="flex gap-3 items-center"><div class="flex-1 min-w-0"><div class="text-sm font-bold" style="color:var(--or)">Me time (reward)</div><select class="inp mt-1" style="padding:6px 10px;font-size:.82rem" onchange="setRew(${n},this.value)">${REW.map(r=>`<option ${r===cur?'selected':''}>${r}</option>`).join('')}</select></div><button class="cb ${on?'on':''}" aria-pressed="${!!on}" aria-label="Tandai reward" onclick="tog('${t.id}')"></button></div></div>`}
@@ -296,8 +303,10 @@ function addMin(q){const m=q||parseInt($('tM').value);if(!(m>=1&&m<=720))return 
   const k=ymd(new Date());A.studyHours[k]=Math.round(((A.studyHours[k]||0)+m/60)*10000)/10000;toast('+'+m+' mnt tercatat (total hari ini '+mn(A.studyHours[k])+' mnt)');save('studyHours')}
 function renderToday(){const el=$('today'),k=ymd(new Date()),d=byDate[k];
   if(!d){el.innerHTML=`<b>${new Date()<START?'Jadwal mulai Rabu, 11 Nov 2026':'Jadwal selesai'}</b>`;return}
-  const m=modeFor(k);
-  el.innerHTML=`<div class="flex flex-wrap items-start justify-between gap-3"><div class="min-w-0"><h2 class="text-xl">Jadwal hari ini</h2><div class="cap mt-1">Hari ${d.n} · minggu ${d.w} · ${d.shift.name}, kerja ${d.shift.time}</div><div class="text-xs mt-1" style="color:var(--or);font-weight:700">${d.ph}</div><div class="text-xs mut mt-1">Fokus minggu ini: ${esc(d.top)}</div></div><div><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${mn(A.studyHours[k]||0)} / ${TGT[m]} mnt</div></div></div>${taskList(d)}<div class="mt-4 pt-3" style="border-top:1px dashed var(--bd)"><div class="cap mb-2">Catat waktu belajar hari ini (menit)</div><div class="flex flex-wrap items-center gap-2"><input id="tM" type="number" inputmode="numeric" min="1" max="720" class="inp" style="width:100px" placeholder="Menit" onkeydown="if(event.key==='Enter')addMin()"><button class="btn" onclick="addMin()">Tambah</button><button class="btn sec" onclick="addMin(30)">+30</button><button class="btn sec" onclick="addMin(60)">+60</button><button class="btn sec" onclick="addMin(120)">+120</button></div></div>`}
+  const m=modeFor(k),bl=d.tasks.filter(t=>t.blk),rw=d.tasks.find(t=>t.rw);
+  el.innerHTML=`<div class="flex flex-wrap items-start justify-between gap-3"><div class="min-w-0"><h2 class="text-xl">Jadwal hari ini</h2><div class="cap mt-1">Hari ${d.n} · minggu ${d.w} · ${d.shift.name}, kerja ${d.shift.time}</div><div class="text-xs mt-1" style="color:var(--or);font-weight:700">${d.ph}</div><div class="text-xs mut mt-1">Fokus minggu ini: ${esc(d.top)}</div></div><div><select class="inp" style="width:auto" onchange="setMode('${k}',this.value)">${Object.keys(MODE).map(x=>`<option value="${x}" ${x===m?'selected':''}>${MODE[x]}</option>`).join('')}</select><div class="text-xs mut mt-1">${mn(A.studyHours[k]||0)} / ${TGT[m]} mnt</div></div></div>
+  <div class="tgrid">${bl.map((t,i)=>taskRow(t)+(i===0&&bl.length===2?brk(d):'')).join('')}</div>
+  <div class="trow">${taskRow(rw)}<div class="mins"><div class="cap mb-2">Catat waktu belajar hari ini (menit)</div><div class="flex flex-wrap items-center gap-2"><input id="tM" type="number" inputmode="numeric" min="1" max="720" class="inp" style="width:100px" placeholder="Menit" onkeydown="if(event.key==='Enter')addMin()"><button class="btn" onclick="addMin()">Tambah</button><button class="btn sec" onclick="addMin(30)">+30</button><button class="btn sec" onclick="addMin(60)">+60</button><button class="btn sec" onclick="addMin(120)">+120</button></div></div></div>`}
 function renderDays(){const m=$('mon').value,k=ymd(new Date());
   $('days').innerHTML=days.filter(d=>d.my===m).map(d=>{const sc=d.tasks.filter(t=>!t.rw).length,done=d.tasks.filter(t=>!t.rw&&A.tasks[t.id]).length,all=d.ds===k;
     return `<div id="d-${d.n}" class="glass p-4" style="${done===sc?'border-color:var(--gr)':all?'border-color:var(--bl)':''}"><div class="flex justify-between"><div><b>Hari ${d.n}</b> <span class="text-xs mut ml-1">${d.ds}${all?' · hari ini':''}</span><div class="text-xs mut mt-1">${d.shift.name} · kerja ${d.shift.time}</div></div><div class="text-right"><div class="text-sm font-bold mut">${done}/${sc} blok</div><div class="dur">${MODE[modeFor(d.ds)].split(' ')[0]}</div></div></div><p class="text-xs font-semibold mt-2" style="color:var(--or)">${d.ph}</p><p class="text-xs mut">Fokus: ${esc(d.top)}</p>${taskList(d)}</div>`}).join('')}
